@@ -29,6 +29,7 @@ import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
+import org.apache.pulsar.client.api.Schema;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -65,12 +66,32 @@ public abstract class PulsarTableTestBase {
                 .setString("table.dynamic-table-options.enabled", "true");
     }
 
+    @AfterAll
+    public void afterAll() throws Exception {
+        pulsar.tearDown();
+    }
+
+    public String getTestServiceUrl() {
+        return pulsar.operator().serviceUrl();
+    }
+
+    public String getTestAdminUrl() {
+        return pulsar.operator().adminUrl();
+    }
+
+    public void createTestTenant(String tenant) throws Exception {
+        pulsar.operator().createTenant(tenant);
+    }
+
+    public void createTestNamespace(String namespace) throws Exception {
+        pulsar.operator().createNamespace(namespace);
+    }
+
     public void createTestTopic(String topic, int numPartitions) throws Exception {
         pulsar.operator().createTopic(topic, numPartitions);
     }
 
-    @AfterAll
-    public void afterAll() throws Exception {
-        pulsar.tearDown();
+    public void createTestSchema(String topic, Schema<?> schema) throws Exception {
+        pulsar.operator().createSchema(topic, schema);
     }
 }
